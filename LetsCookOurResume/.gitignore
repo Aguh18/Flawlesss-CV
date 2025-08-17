@@ -1,0 +1,15 @@
+.idea
+*.pyc
+*/__pycache__
+*.DS_STORE
+config/config.py
+!config/config.py.example
+.*-venv*/
+data/*
+temp/
+.github/*
+venv/
+script
+
+# Environment variables
+.env
