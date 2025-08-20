@@ -30,6 +30,8 @@ services:
     environment:
       - POSTGRES_URL=host=postgres user=postgres password=postgres dbname=flawlessCv port=5432 sslmode=disable TimeZone=Asia/Shanghai
       - JWT_KEY=secret
+    env_file:
+      - .env
     depends_on:
       postgres:
         condition: service_healthy
