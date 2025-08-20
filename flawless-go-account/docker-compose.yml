@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: flawlesscv-postgres
+    environment:
+      POSTGRES_DB: flawlessCv
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5433:5432"  # Menggunakan port 5433 untuk menghindari konflik dengan postgres lokal
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - flawlesscv-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  account-service:
+    build: .
+    container_name: flawlesscv-account
+    ports:
+      - "8080:8080"
+    environment:
+      - POSTGRES_URL=host=postgres user=postgres password=postgres dbname=flawlessCv port=5432 sslmode=disable TimeZone=Asia/Shanghai
+      - JWT_KEY=secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - flawlesscv-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  flawlesscv-network:
+    driver: bridge
